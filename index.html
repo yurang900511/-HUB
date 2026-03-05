@@ -253,6 +253,27 @@
     }
     .empty-msg .kbd { font-size: 12px; }
 
+    /* ─── TTS CONTROLS ─── */
+    .tts-controls {
+      display: flex; gap: 3px; align-items: center; flex-shrink: 0;
+    }
+    .tts-label { font-size: 14px; margin-right: 2px; }
+    .tts-rate-btn {
+      border: 1px solid var(--border); background: var(--surface);
+      border-radius: 8px; cursor: pointer; color: var(--text-muted);
+      padding: 5px 9px; font-size: 11px; font-weight: 500; line-height: 1;
+      transition: all .15s;
+    }
+    .tts-rate-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tts-rate-btn.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); font-weight: 700; }
+
+    /* speaking animation */
+    @keyframes pulse-speak {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+    .iconbtn.speaking { animation: pulse-speak 0.6s ease-in-out infinite; border-color: var(--accent); background: var(--accent-bg); }
+
     /* ─── FONT SIZE CONTROLS ─── */
     .fs-controls {
       display: flex; gap: 2px; align-items: center;
@@ -290,6 +311,12 @@
       <button class="fs-btn" data-fs="md" title="보통" style="font-size:1.1em">A</button>
       <button class="fs-btn" data-fs="lg" title="크게" style="font-size:1.25em">A</button>
       <button class="fs-btn" data-fs="xl" title="매우 크게" style="font-size:1.4em">A</button>
+    </div>
+    <div class="tts-controls">
+      <span class="tts-label">🔊</span>
+      <button class="tts-rate-btn" data-rate="0.7" title="느리게">느림</button>
+      <button class="tts-rate-btn" data-rate="0.85" title="보통">보통</button>
+      <button class="tts-rate-btn" data-rate="1.0" title="빠르게">빠름</button>
     </div>
   </div>
   <div class="row">
@@ -567,6 +594,15 @@
         toggleFavorite(e.id);
       });
 
+      const speakBtn = document.createElement("button");
+      speakBtn.className = "iconbtn speak-btn";
+      speakBtn.title = "발음 듣기";
+      speakBtn.textContent = "🔊";
+      speakBtn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        speakWord(e.word, e.example, speakBtn);
+      });
+
       const editBtn = document.createElement("button");
       editBtn.className = "iconbtn";
       editBtn.title = "편집";
@@ -577,6 +613,7 @@
       });
 
       actions.appendChild(favBtn);
+      actions.appendChild(speakBtn);
       actions.appendChild(editBtn);
 
       item.appendChild(dot);
@@ -839,6 +876,60 @@
   if (entries.length === 0) {
     $("empty").style.display = "block";
   }
+  // ---------- TTS ----------
+  let ttsRate = parseFloat(localStorage.getItem('vocab_tts_rate') || '0.85');
+
+  function speakWord(word, example, btn) {
+    if (!('speechSynthesis' in window)) {
+      alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+      return;
+    }
+    window.speechSynthesis.cancel();
+
+    // 단어만 먼저, 잠깐 후 예문
+    const wordUtt = new SpeechSynthesisUtterance(word);
+    wordUtt.lang = 'en-US';
+    wordUtt.rate = ttsRate;
+    wordUtt.pitch = 1;
+
+    if (btn) {
+      btn.textContent = '🔉';
+      btn.classList.add('speaking');
+    }
+    wordUtt.onend = () => {
+      if (example && example.trim()) {
+        setTimeout(() => {
+          const exUtt = new SpeechSynthesisUtterance(example.trim());
+          exUtt.lang = 'en-US';
+          exUtt.rate = ttsRate;
+          exUtt.pitch = 1;
+          exUtt.onend = () => {
+            if (btn) { btn.textContent = '🔊'; btn.classList.remove('speaking'); }
+          };
+          window.speechSynthesis.speak(exUtt);
+        }, 500);
+      } else {
+        if (btn) { btn.textContent = '🔊'; btn.classList.remove('speaking'); }
+      }
+    };
+    window.speechSynthesis.speak(wordUtt);
+  }
+
+  // TTS speed buttons
+  document.querySelectorAll('.tts-rate-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      ttsRate = parseFloat(b.dataset.rate);
+      localStorage.setItem('vocab_tts_rate', ttsRate);
+      document.querySelectorAll('.tts-rate-btn').forEach(x =>
+        x.classList.toggle('active', x.dataset.rate === String(ttsRate))
+      );
+    });
+  });
+  // init active state
+  document.querySelectorAll('.tts-rate-btn').forEach(b =>
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === ttsRate)
+  );
+
   // ---------- font size ----------
   const FS_KEY = 'vocab_fs';
   const fsBtns = document.querySelectorAll('.fs-btn[data-fs]');
