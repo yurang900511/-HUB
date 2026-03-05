@@ -1,0 +1,24 @@
+{
+  "name": "개인 단어사전",
+  "short_name": "단어사전",
+  "description": "오프라인 개인 영어 단어사전",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f2ee",
+  "theme_color": "#2d6a4f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%232d6a4f'/%3E%3Ctext x='96' y='140' font-family='Georgia,serif' font-size='120' font-weight='700' fill='%23f5f2ee' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232d6a4f'/%3E%3Ctext x='256' y='370' font-family='Georgia,serif' font-size='320' font-weight='700' fill='%23f5f2ee' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
