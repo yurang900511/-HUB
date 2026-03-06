@@ -59,7 +59,7 @@
       padding: 12px 20px;
     }
     .header-top {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
     }
     .logo-mark {
       width: 28px; height: 28px; border-radius: 8px;
@@ -261,11 +261,16 @@
     .tts-rate-btn {
       border: 1px solid var(--border); background: var(--surface);
       border-radius: 8px; cursor: pointer; color: var(--text-muted);
-      padding: 5px 9px; font-size: 11px; font-weight: 500; line-height: 1;
+      padding: 5px 8px; font-size: 11px; font-weight: 500; line-height: 1;
       transition: all .15s;
     }
     .tts-rate-btn:hover { border-color: var(--accent); color: var(--accent); }
     .tts-rate-btn.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); font-weight: 700; }
+    @media (max-width: 400px) {
+      .tts-label { display: none; }
+      .tts-rate-btn { padding: 5px 6px; font-size: 10px; }
+      .fs-btn { padding: 4px 7px; }
+    }
 
     /* speaking animation */
     @keyframes pulse-speak {
